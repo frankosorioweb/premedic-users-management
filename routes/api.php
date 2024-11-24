@@ -37,4 +37,5 @@ Route::get('/migrate', function() {
         ], 500);
     }
 });
-Route::get('/register', [AuthController::class, 'register']);
+Route::get('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);

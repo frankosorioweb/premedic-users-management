@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Contracts\Providers\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -19,6 +18,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'role' => 'required|string|max:255',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -29,6 +29,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role' => $request->role,
             'password' => bcrypt($request->password),
         ]);
 
@@ -105,5 +106,14 @@ class AuthController extends Controller
         $user->update($dataToUpdate);
 
         return response()->json(['message' => 'Perfil actualizado correctamente', 'user' => $user], 200);
+    }
+
+    public function deleteProfile() {
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+
+        $user->delete();
+
+        return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
     }
 }

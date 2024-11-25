@@ -38,7 +38,8 @@ Route::get('/migrate', function() {
     }
 });
 
-Route::post('register', [AuthController::class, 'register']);
-Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('/user/register', [AuthController::class, 'register']);
+Route::get('/user/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware('auth:api')->put('/user/update', [AuthController::class, 'updateProfile']);
+Route::middleware('auth:api')->delete('/user/delete', [AuthController::class, 'deleteProfile']);

@@ -87,7 +87,8 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
-            'password' => 'required|string|min:6|confirmed'
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +96,7 @@ class AuthController extends Controller
         }
 
         // Actualizar los datos del usuario
-        $dataToUpdate = $request->only('name', 'email', 'password');
+        $dataToUpdate = $request->only('name', 'email', 'password', 'role');
 
         // Si se proporcionó una nueva contraseña, la encriptamos y la añadimos a los datos a actualizar
         if ($request->filled('password')) {

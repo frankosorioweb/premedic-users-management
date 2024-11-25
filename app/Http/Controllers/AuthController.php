@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Contracts\Providers\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -73,5 +75,35 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user
         ]);
+    }
+
+    // Actualizar datos del usuario | Se puede enviar el usuario / contraseña o directamente el JWT de autenticación
+    public function updateProfile(Request $request) {
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+
+        // Validación personalizada usando Validator
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Actualizar los datos del usuario
+        $dataToUpdate = $request->only('name', 'email', 'password');
+
+        // Si se proporcionó una nueva contraseña, la encriptamos y la añadimos a los datos a actualizar
+        if ($request->filled('password')) {
+            $dataToUpdate['password'] = Hash::make($request->password);
+        }
+
+        // Actualiza el perfil usando el modelo
+        $user->update($dataToUpdate);
+
+        return response()->json(['message' => 'Perfil actualizado correctamente', 'user' => $user], 200);
     }
 }

@@ -37,5 +37,8 @@ Route::get('/migrate', function() {
         ], 500);
     }
 });
-Route::get('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+
+Route::post('register', [AuthController::class, 'register']);
+Route::get('login', [AuthController::class, 'login'])->name('login');
+
+Route::middleware('auth:api')->put('/user/update', [AuthController::class, 'updateProfile']);
